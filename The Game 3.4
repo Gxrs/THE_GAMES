@@ -1,0 +1,327 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+
+unsigned int cursorPos = 0;
+int posX = 6;
+int posY = 9;
+unsigned int inGame = 0;
+int score = 0;
+int idleP = 0;
+int lives = 3;
+int highscore[3];
+
+struct hindernis{
+    int hPosX;
+    int hPosY;
+};
+
+struct hindernis obs1;
+struct hindernis obs2;
+
+
+//////////////////////////////
+
+void game();
+void title();
+void hilfeM();
+void menue0();
+void gameOver();
+void highscoreG();
+
+void enterT(){
+    switch (cursorPos){
+        case 0:game();break;
+        case 1:highscoreG();break;
+        case 2:hilfeM();break;
+        case 3:exit(0);break;
+    }
+}
+
+void verz(unsigned int a){
+    int c = 1;
+    int d = 1;
+    for (c = 1 ; c <= 32*a ; c++){
+        for (d = 1 ; d <= 32767 ; d++)
+        {}
+    }
+}
+
+void highscoreG(){
+    int char1;
+    system("cls");
+    title();
+    printf("\n\n\t\t\t\tHighscores:\n\n");
+    printf("\t\t\t\t1.%d\n",highscore[0]);
+    printf("\t\t\t\t2.%d\n",highscore[1]);
+    printf("\t\t\t\t3.%d\n",highscore[2]);
+    char1 = getch();
+    if (!char1 == 13){
+        hilfeM();
+    };
+}
+
+void newHighS(){
+    if (score>=highscore[0]){
+        highscore[2]=highscore[1];
+        highscore[1]=highscore[0];
+        highscore[0]=score;
+    }else if(score>=highscore[1]){
+        highscore[2]=highscore[1];
+        highscore[1]=score;
+    }else if(score>=highscore[2]){
+        highscore[2]=score;
+    }
+
+}
+
+void newObs(){
+
+    if(obs1.hPosY>=0){
+        obs1.hPosY ++;
+    }
+    if(obs2.hPosY>=-1){
+        obs2.hPosY ++;
+    }
+
+    if(obs1.hPosY==-1){
+        int r = rand() % 13;
+        obs1.hPosX= r;
+        obs1.hPosY= 0;
+        if(idleP>=15){
+            obs1.hPosX=posX;
+            idleP=0;
+        }
+    }
+    if(obs2.hPosY==-2){
+        int r = rand() % 13;
+        obs2.hPosX= r;
+        obs2.hPosY= -1;
+    }
+    if(obs1.hPosY>10){
+        obs1.hPosY =-1;
+    }
+    if(obs2.hPosY>10){
+        obs2.hPosY =-2;
+    }
+}
+
+void obs1Col(){
+    if((posX==obs1.hPosX)&&(posY==obs1.hPosY)){
+       verz(300);lives --;
+    }
+}
+void obs2Col(){
+    if((posX==obs2.hPosX)&&(posY==obs2.hPosY)){
+        verz(300);lives --;
+    }
+}
+
+void obsCol(){
+    obs1Col();
+    obs2Col();
+}
+
+void cursorMov(){
+    int a = 0;
+    cursorPos = (cursorPos + a)%4;
+
+    int char1, char2;
+    char1 = getch();
+    if (char1 == 13){
+        enterT();
+    }else if (char1 == 0xE0){
+        char2 = getch();
+    };
+
+    switch (char2){
+        case 72: printf("\0 UP"); a=(-1);break;
+        case 80: printf("\0 DOWN"); a=(+1); break;
+        case 75: printf("\0 LEFT"); a=(+0); break;
+        case 77: printf("\0 RIGHT"); a=(+0); break;
+
+    }
+    cursorPos = (cursorPos + a)%4;
+}
+
+void startScreen(){
+    system("cls");
+    score=0;
+    title();
+    menue0();
+}
+
+void title(){
+    printf("   __________.__               ________                        ________  \n");
+    printf("   \\__    ___|  |__   ____    /  _____/_____    _____   ____   \\_____  \\ \n");
+    printf("     |    |  |  |  \\_/ __ \\  /   \\  ___\\__  \\  /     \\_/ __ \\    _(__  < \n");
+    printf("     |    |  |   |  \\  ___/  \\    \\_\\  \\/ __ \\|  | |  \\  ___/   /       \\\n");
+    printf("     |____|  |___|  /\\___  >  \\______  (____  |__|_|  /\\___  > /______  /\n");
+    printf("                  \\/     \\/          \\/     \\/      \\/     \\/         \\/ \n");
+    printf("\t\t\t   The tales of a lost virgin\n\n\n");
+}
+
+void hilfeM(){
+    system("cls");
+    char player=254; //■
+    char box=178; //▓▓
+    int char1;
+    title();
+    printf("\t\t%c\tThis is Florian.\n\n",player);
+    printf("\t\t\tFlorian wants to visit his girlfriend Melli.\n\n\n");
+    printf("\t\t%c\tHelp Florian avoiding these walls \n\t\t\tand obstacles so that he can finally\n",box);
+    printf("\t\t\tget laid tonight!\n\n");
+    printf("\t\t\tUse arrow keys to move Florian.\n\n");
+    printf("\t\t\tHis virginity lies in YOUR hands!\n");
+
+
+    char1 = getch();
+    if (!char1 == 13){
+        hilfeM();
+    };
+}
+
+void resetGame(){
+    posX=6;
+    posY=9;
+    cursorPos=0;
+    lives=3;
+}
+
+void menue0(){
+    char c1 =187; //╗
+    char c2 =188; //╝
+    char c3 =186; //║
+    char c4 =200; //╚
+    char c5 =201; //╔
+    char c6 =205; //═
+    printf("\n\n\n");
+    printf("\t\t\t       %c%c%c%c%c%c%c%c%c%c%c%c%c\n",c5,c6,c6,c6,c6,c6,c6,c6,c6,c6,c6,c6,c1);
+    switch (cursorPos){
+    case 0:printf("\t\t\t\t>Start \n\t\t\t\tHighscores \n\t\t\t\tHelp \n\n\t\t\t\tExit\n");break;
+    case 1:printf("\t\t\t\tStart \n\t\t\t\t>Highscores \n\t\t\t\tHelp \n\n\t\t\t\tExit\n");break;
+    case 2:printf("\t\t\t\tStart \n\t\t\t\tHighscores \n\t\t\t\t>Help \n\n\t\t\t\tExit\n");break;
+    case 3:printf("\t\t\t\tStart \n\t\t\t\tHighscores \n\t\t\t\tHelp \n\n\t\t\t\t>Exit\n");break;
+    }
+    printf("\t\t\t       %c%c%c%c%c%c%c%c%c%c%c%c%c\n",c4,c6,c6,c6,c6,c6,c6,c6,c6,c6,c6,c6,c2);
+    cursorMov(0);
+    startScreen();
+}
+
+void spielFeld(){
+    char box=178; //▓▓
+    char player=254; //■
+    char *tab="\t\t\t\t";
+    char feld[15]="             ";
+    int i;
+    int hoehe = 10;
+    int char1, char2;
+
+
+    if ((posX<0)|(posX>12)| (posY<0) |(posY>hoehe)){lives --;};
+
+    if (lives<0){
+        newHighS();
+        resetGame();
+        gameOver();
+    };
+
+    printf("%s%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\tScore: %d\n",tab,box,box,box,box,box,box,box,box,box,box,box,box,box,box,box,score);
+    for(i = 0; i<= hoehe;i++){
+        if(i == obs1.hPosY){
+            feld [obs1.hPosX]=box;
+        }else{
+            feld [obs1.hPosX]=' ';
+        }
+        ///////////////////////
+        if(i == obs2.hPosY){
+            feld [obs2.hPosX]=box;
+        }else{
+            feld [obs2.hPosX]=' ';
+            if(obs1.hPosX==obs2.hPosX && i==obs1.hPosY){
+                feld [obs2.hPosX]=box;
+            }
+        }
+        ///////////////////////
+        if(i == posY){
+            feld [posX]=player;
+        }else{
+            feld [posX]=' ';
+            if(obs1.hPosX==posX && i==obs1.hPosY){
+                feld [posX]=box;
+            }
+            if(obs2.hPosX==posX && i==obs2.hPosY){
+                feld [posX]=box;
+            }
+        }
+        //////////////////////
+        if(i == 1){
+            printf("%s%c%s%c\tLives: %d\n",tab,box,feld,box,lives);
+
+        }else{
+            printf("%s%c%s%c\n",tab,box,feld,box);
+        }
+    }
+
+    printf("%s%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",tab,box,box,box,box,box,box,box,box,box,box,box,box,box,box,box);
+
+    if(kbhit()){
+        char1 = getch();
+        if (char1 == 13){
+            enterT();
+        }else if (char1 == 0xE0){
+            char2 = getch();
+        };
+
+        switch (char2){
+            case 72: printf("\0 UP"); posY=(posY-1);break;
+            case 80: printf("\0 DOWN"); posY=(posY+1); break;
+            case 75: printf("\0 LEFT"); posX = (posX-1); break;
+            case 77: printf("\0 RIGHT"); posX = (posX + 1); break;
+        };
+    }else{
+            if(score<=1000){verz(40);}
+            else if(score>=1001&&score<=2000){verz(35);}
+            else if(score>=2001&&score<=3000){verz(30);}
+            else if(score>=3001&&score<=4000){verz(25);}
+            else if(score>=4001&&score<=5000){verz(20);}
+            else if(score>=5001&&score<=6000){verz(15);}
+            else if(score>=6001&&score<=7000){verz(10);}
+            else if(score>=7001&&score<=8000){verz(8);}
+            else if(score>=8001&&score<=9000){verz(6);}
+            else if(score>=9001&&score<=10000){verz(3);}
+            else if(score>=10001){verz(0);}
+            idleP ++;
+        }
+    score= score+10;
+}
+
+void gameOver(){
+    system("cls");
+    title();
+    printf("\t\t      _____                  _____             \n");
+    printf("\t\t     |   __|___ _____ ___   |     |_ _ ___ ___ \n");
+    printf("\t\t     |  |  | .'|     | -_|  |  |  | | | -_|  _|\n");
+    printf("\t\t     |_____|__,|_|_|_|___|  |_____|\\_/|___|_|\n");
+    printf("\n\t\t\t\t     Score: %d\n",score);
+    verz(700);
+    inGame=0;
+    startScreen();
+}
+
+void game(){
+    system("cls");
+    title();
+//  cursorMov(0);
+    inGame=1;
+    newObs();
+    spielFeld();
+    obsCol();
+    game();
+}
+
+int main()
+{
+    startScreen();
+    return 0;
+}
